@@ -1,5 +1,5 @@
 import { createClient } from "redis";
-import { downloadS3Folder } from "./aws.js";
+import { copyFinalDist, downloadS3Folder } from "./aws.js";
 import dotenv from "dotenv";
 import { buildProject } from "./build.js";
 
@@ -21,6 +21,7 @@ async function main() {
     await downloadS3Folder(`output/${response?.element}`);
     console.log("downloaded");
     await buildProject(response?.element || "");
+    await copyFinalDist(response?.element || "");
   }
 }
 
