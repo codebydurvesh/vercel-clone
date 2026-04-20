@@ -56,5 +56,6 @@ export async function downloadS3Folder(prefix: string) {
         object.Body.pipe(outputFile);
       }
     }) || [];
+  console.log("awaiting");
   await Promise.all(allPromises?.filter((x) => x !== undefined));
 }

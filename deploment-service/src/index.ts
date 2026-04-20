@@ -1,6 +1,7 @@
 import { createClient } from "redis";
 import { downloadS3Folder } from "./aws.js";
 import dotenv from "dotenv";
+import { buildProject } from "./build.js";
 
 dotenv.config();
 
@@ -18,6 +19,8 @@ async function main() {
 
     console.log("Received:", response);
     await downloadS3Folder(`output/${response?.element}`);
+    console.log("downloaded");
+    await buildProject(response?.element || "");
   }
 }
 
