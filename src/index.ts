@@ -11,6 +11,17 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { getAllFiles } from "./file.js";
 import { uploadFile } from "./aws.js";
+import { createClient } from "redis";
+
+const publisher = createClient();
+publisher
+  .connect()
+  .then(() => {
+    console.log("Connected to Redis");
+  })
+  .catch((err) => {
+    console.error("Error connecting to Redis:", err);
+  });
 
 const app = express();
 app.use(cors());
@@ -40,6 +51,8 @@ app.post("/deploy", async (req, res) => {
         return uploadFile(s3Key, file);
       }),
     );
+
+    publisher.lPush("build-queue", id);
 
     res.json({ id: id, message: "Deployment successful" });
   } catch (error) {
