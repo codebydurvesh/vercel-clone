@@ -17,10 +17,20 @@ const publisher = createClient();
 publisher
   .connect()
   .then(() => {
-    console.log("Connected to Redis");
+    console.log("Connected publisher to Redis");
   })
   .catch((err) => {
-    console.error("Error connecting to Redis:", err);
+    console.error("Error connecting publisher to Redis:", err);
+  });
+
+const subscriber = createClient();
+subscriber
+  .connect()
+  .then(() => {
+    console.log("Connected subscriber to Redis");
+  })
+  .catch((err) => {
+    console.error("Error connecting subscriber to  Redis:", err);
   });
 
 const app = express();
@@ -53,12 +63,19 @@ app.post("/deploy", async (req, res) => {
     );
 
     publisher.lPush("build-queue", id);
+    publisher.hSet("status", id, "uploaded");
 
     res.json({ id: id, message: "Deployment successful" });
   } catch (error) {
     console.error("Error deploying repository: ", error);
     res.status(500).json({ message: "Internal server error" });
   }
+});
+
+app.get("/status/:id", async (req, res) => {
+  const id = req.params.id;
+  const status = await publisher.hGet("status", id as string);
+  res.json({ id: id, status: status });
 });
 
 app.listen(3000, () => {

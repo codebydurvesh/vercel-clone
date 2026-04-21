@@ -6,9 +6,11 @@ import { buildProject } from "./build.js";
 dotenv.config();
 
 const subscriber = createClient();
+const publisher = createClient();
 
 async function main() {
   await subscriber.connect();
+  await publisher.connect();
 
   console.log("Connected to Redis...");
 
@@ -20,8 +22,9 @@ async function main() {
     console.log("Received:", response);
     await downloadS3Folder(`output/${response?.element}`);
     console.log("downloaded");
-    await buildProject(response?.element || "");
-    await copyFinalDist(response?.element || "");
+    await buildProject(response?.element || "NULL");
+     copyFinalDist(response?.element || "NULL");
+      publisher.hSet("status", response?.element || "NULL", "deployed");
   }
 }
 
