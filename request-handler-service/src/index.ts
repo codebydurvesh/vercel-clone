@@ -14,43 +14,72 @@ if (!S3_BUCKET_NAME || !S3_BUCKET_REGION || !ACCESS_KEY || !SECRET_KEY) {
 }
 
 const s3 = new S3Client({
-  region: S3_BUCKET_REGION ?? "",
+  region: S3_BUCKET_REGION!,
   credentials: {
-    accessKeyId: ACCESS_KEY ?? "",
-    secretAccessKey: SECRET_KEY ?? "",
+    accessKeyId: ACCESS_KEY!,
+    secretAccessKey: SECRET_KEY!,
   },
 });
+
+function getContentType(filePath: string): string {
+  if (filePath.endsWith(".html")) return "text/html";
+  if (filePath.endsWith(".css")) return "text/css";
+  if (filePath.endsWith(".js")) return "application/javascript";
+  if (filePath.endsWith(".svg")) return "image/svg+xml";
+  if (filePath.endsWith(".png")) return "image/png";
+  if (filePath.endsWith(".jpg") || filePath.endsWith(".jpeg"))
+    return "image/jpeg";
+  if (filePath.endsWith(".ico")) return "image/x-icon";
+  return "application/octet-stream";
+}
 
 const app = express();
 app.use(express.json());
 
 app.use(async (req, res) => {
-  if (req.path === "/favicon.ico") return res.status(204).end();
-
   const host = req.hostname;
-  console.log("Host:", host);
-
   const id = host.split(".")[0];
-  console.log("Subdomain ID:", id);
-
   const filePath = req.path;
+
+  console.log("Host:", host);
+  console.log("Subdomain ID:", id);
   console.log("File Path:", filePath);
+  // IMPORTANT BUGS
+  // Files uploaded from Windows have backslashes after the prefix (dist/<id>/)
+  // e.g. S3 key is: dist/s9wg5/assets\index-xxx.js
+  // req.path gives:           /assets/index-xxx.js
+  // So we convert the path portion to use backslashes to match
+  const s3FilePath =
+    filePath === "/" ? "index.html" : filePath.slice(1).replace(/\//g, "\\");
 
-  const contents = await s3.send(
-    new GetObjectCommand({
-      Bucket: S3_BUCKET_NAME!,
-      Key: `dist/${id}${filePath}`,
-    }),
-  );
+  const key = `dist/${id}/${s3FilePath}`;
 
-  const type = filePath.endsWith("html")
-    ? "text/html"
-    : filePath.endsWith("css")
-      ? "text/css"
-      : "application/javascript";
-
-  res.set("Content-Type", type);
-  (contents.Body as Readable).pipe(res);
+  try {
+    const contents = await s3.send(
+      new GetObjectCommand({ Bucket: S3_BUCKET_NAME!, Key: key }),
+    );
+    res.set("Content-Type", getContentType(filePath));
+    (contents.Body as Readable).pipe(res);
+  } catch (err: any) {
+    if (err.name === "NoSuchKey") {
+      // SPA fallback: serve index.html for unknown routes (React Router support)
+      try {
+        const fallback = await s3.send(
+          new GetObjectCommand({
+            Bucket: S3_BUCKET_NAME!,
+            Key: `dist/${id}/index.html`,
+          }),
+        );
+        res.set("Content-Type", "text/html");
+        (fallback.Body as Readable).pipe(res);
+      } catch {
+        res.status(404).send("Not found");
+      }
+    } else {
+      console.error("S3 error:", err);
+      res.status(500).send("Internal server error");
+    }
+  }
 });
 
 app.listen(3001, () => {
