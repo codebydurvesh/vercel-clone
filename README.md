@@ -107,6 +107,37 @@ cd request-handler-service
 npm start
 ```
 
+## Run With Docker Compose
+
+### 1) Install Docker
+
+Install Docker Desktop (Docker Compose is included).
+
+### 2) Create env files
+
+Create these files from examples and fill your values:
+
+- `upload-service/.env` from `upload-service/.env.example`
+- `request-handler-service/.env` from `request-handler-service/.env.example`
+- `deployment-service/.env` from `deployment-service/.env.example`
+- `nextjs-frontend/.env.local` from `nextjs-frontend/.env.example`
+
+### 3) Start all services using Docker Compose
+
+From project root:
+
+```bash
+docker compose up -d
+```
+
+Frontend will be available at `http://localhost:3002`.
+
+### 4) Stop services
+
+```bash
+docker compose down
+```
+
 ## Service Ports
 
 - `upload-service`: `http://localhost:3000`
