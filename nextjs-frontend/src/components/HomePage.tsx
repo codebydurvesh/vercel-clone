@@ -9,6 +9,35 @@ interface StatusState {
   id?: string;
 }
 
+function parseRequestHandlerBaseUrl(rawValue?: string): URL {
+  const candidate = rawValue?.trim() || "http://localhost:3001";
+
+  try {
+    return new URL(candidate);
+  } catch {
+    // Allow host-only values like "localhost:3001".
+    return new URL(`http://${candidate}`);
+  }
+}
+
+function buildDeployedSiteUrl(deploymentId: string): string {
+  const raw =
+    process.env.NEXT_PUBLIC_BACKEND_REQ_URL || "http://localhost:3001";
+
+  // Ensure protocol exists
+  const base = raw.startsWith("http") ? raw : `http://${raw}`;
+
+  const url = new URL(base);
+
+  // Inject subdomain
+  url.hostname = `${deploymentId}.${url.hostname}`;
+
+  // Force entry file
+  url.pathname = "/index.html";
+
+  return url.toString();
+}
+
 export default function Deploy() {
   const sampleRepoUrl =
     "https://github.com/codebydurvesh/deployment-test-react-app";
@@ -18,15 +47,6 @@ export default function Deploy() {
     process.env.NEXT_PUBLIC_BACKEND_UPLOAD_URL ||
     "http://localhost:3000"
   ).replace(/\/$/, "");
-
-  const requestHandlerHost = (
-    process.env.NEXT_PUBLIC_BACKEND_REQ_URL ||
-    process.env.NEXT_PUBLIC_REQUEST_HANDLER_HOST ||
-    "localhost"
-  )
-    .replace(/^https?:\/\//, "")
-    .replace(/\/.*$/, "");
-  // not removing port now.
 
   const [repoUrl, setRepoUrl] = useState("");
   const [status, setStatus] = useState<StatusState>({
@@ -159,9 +179,7 @@ export default function Deploy() {
         ? "Deploying…"
         : "Upload";
 
-  const deployedSiteUrl = status.id
-    ? `http://${status.id}.${requestHandlerHost}:3001/index.html`
-    : "";
+  const deployedSiteUrl = status.id ? buildDeployedSiteUrl(status.id) : "";
 
   const deployedSnapshotUrl = deployedSiteUrl
     ? `/api/snapshot?target=${encodeURIComponent(deployedSiteUrl)}&w=1200&h=700&id=${status.id}`

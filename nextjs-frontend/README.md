@@ -10,7 +10,8 @@ This frontend is a small deployment UI for the Vercel-clone backend.
 4. Status moves from `uploading` -> `building` -> `deployed`.
 5. When status is `deployed`:
    - Upload form is hidden.
-   - Frontend shows deployed URL: `http://{id}.{BACKEND_REQ_HOST}:3001/index.html`.
+   - Frontend shows deployed URL by parsing `NEXT_PUBLIC_BACKEND_REQ_URL` with `URL`, then setting host to `{id}.{hostname}` and path to `/index.html`.
+   - Local example: `http://1xrcy.localhost:3001/index.html`.
    - Frontend requests `/api/snapshot` to render a static preview image.
 6. While snapshot is generating, a loading overlay is shown. If snapshot fails, a fallback message is shown.
 
