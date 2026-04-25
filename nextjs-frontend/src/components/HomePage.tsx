@@ -25,8 +25,8 @@ export default function Deploy() {
     "localhost"
   )
     .replace(/^https?:\/\//, "")
-    .replace(/\/.*$/, "")
-    .replace(/:\d+$/, "");
+    .replace(/\/.*$/, "");
+  // not removing port now.
 
   const [repoUrl, setRepoUrl] = useState("");
   const [status, setStatus] = useState<StatusState>({
@@ -176,11 +176,11 @@ export default function Deploy() {
           {/* Card */}
           <div
             className="
-            rounded-xl px-8 py-8
-            bg-neutral-900
-            border border-white/[0.07]
-            shadow-[0_8px_48px_rgba(0,0,0,0.55)]
-          "
+              rounded-xl px-8 py-8
+              bg-neutral-900
+              border border-white/[0.07]
+              shadow-[0_8px_48px_rgba(0,0,0,0.55)]
+            "
           >
             {/* Heading */}
             <h1 className="text-neutral-100 text-[1.125rem] font-semibold tracking-tight mb-1.5">
@@ -236,16 +236,16 @@ export default function Deploy() {
                     spellCheck={false}
                     disabled={isLoading}
                     className="
-                      h-10 rounded-lg px-3 text-sm w-full
-                      bg-neutral-800 text-neutral-100
-                      border border-white/[0.08]
-                      placeholder:text-neutral-600
-                      outline-none
-                      transition-colors duration-150
-                      hover:border-white/[0.16]
-                      focus:border-white/30
-                      disabled:opacity-40 disabled:cursor-not-allowed
-                    "
+                        h-10 rounded-lg px-3 text-sm w-full
+                        bg-neutral-800 text-neutral-100
+                        border border-white/[0.08]
+                        placeholder:text-neutral-600
+                        outline-none
+                        transition-colors duration-150
+                        hover:border-white/[0.16]
+                        focus:border-white/30
+                        disabled:opacity-40 disabled:cursor-not-allowed
+                      "
                   />
                 </div>
 
@@ -254,15 +254,15 @@ export default function Deploy() {
                   onClick={deploy}
                   disabled={isLoading}
                   className="
-                    w-full h-10 rounded-lg text-sm font-medium tracking-tight
-                    bg-neutral-100 text-neutral-900
-                    flex items-center justify-center gap-2
-                    transition-all duration-150
-                    hover:bg-white
-                    active:scale-[0.99]
-                    disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100
-                    cursor-pointer
-                  "
+                      w-full h-10 rounded-lg text-sm font-medium tracking-tight
+                      bg-neutral-100 text-neutral-900
+                      flex items-center justify-center gap-2
+                      transition-all duration-150
+                      hover:bg-white
+                      active:scale-[0.99]
+                      disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100
+                      cursor-pointer
+                    "
                 >
                   {isLoading && (
                     <svg
@@ -295,17 +295,17 @@ export default function Deploy() {
             {status.type !== "idle" && (
               <div
                 className={`
-                mt-5 flex items-start gap-2.5
-                bg-neutral-800/60 rounded-lg px-3.5 py-3
-                border ${statusBorder[status.type]}
-                transition-colors duration-300
-              `}
+                  mt-5 flex items-start gap-2.5
+                  bg-neutral-800/60 rounded-lg px-3.5 py-3
+                  border ${statusBorder[status.type]}
+                  transition-colors duration-300
+                `}
               >
                 <span
                   className={`
-                  mt-[5px] w-[7px] h-[7px] rounded-full shrink-0
-                  ${statusDot[status.type]}
-                `}
+                    mt-[5px] w-[7px] h-[7px] rounded-full shrink-0
+                    ${statusDot[status.type]}
+                  `}
                 />
                 <div>
                   <p className="text-neutral-400 text-[0.8rem] leading-relaxed">

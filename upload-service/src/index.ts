@@ -13,7 +13,9 @@ import { getAllFiles } from "./file.js";
 import { uploadFile } from "./aws.js";
 import { createClient } from "redis";
 
-const publisher = createClient();
+const publisher = createClient({
+  url: process.env.REDIS_URL!,
+});
 publisher
   .connect()
   .then(() => {
@@ -23,7 +25,9 @@ publisher
     console.error("Error connecting publisher to Redis:", err);
   });
 
-const subscriber = createClient();
+const subscriber = createClient({
+  url: process.env.REDIS_URL!,
+});
 subscriber
   .connect()
   .then(() => {

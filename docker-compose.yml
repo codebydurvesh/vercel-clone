@@ -1,0 +1,34 @@
+services:
+  redis:
+    image: redis:7-alpine
+
+  upload-service:
+    build: ./upload-service
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./upload-service/.env
+
+  request-handler-service:
+    build: ./request-handler-service
+    ports:
+      - "3001:3001"
+    env_file:
+      - ./request-handler-service/.env
+
+  deployment-service:
+    build: ./deployment-service
+    env_file:
+      - ./deployment-service/.env
+    depends_on:
+      - redis
+
+  frontend:
+    build: ./nextjs-frontend
+    ports:
+      - "3002:3000"
+    env_file:
+      - ./nextjs-frontend/.env.local
+    depends_on:
+      - upload-service
+      - request-handler-service

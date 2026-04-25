@@ -44,13 +44,8 @@ app.use(async (req, res) => {
   console.log("Host:", host);
   console.log("Subdomain ID:", id);
   console.log("File Path:", filePath);
-  // IMPORTANT BUGS
-  // Files uploaded from Windows have backslashes after the prefix (dist/<id>/)
-  // e.g. S3 key is: dist/s9wg5/assets\index-xxx.js
-  // req.path gives:           /assets/index-xxx.js
-  // So we convert the path portion to use backslashes to match
-  const s3FilePath =
-    filePath === "/" ? "index.html" : filePath.slice(1).replace(/\//g, "\\");
+
+  const s3FilePath = filePath === "/" ? "index.html" : filePath.slice(1);
 
   const key = `dist/${id}/${s3FilePath}`;
 

@@ -5,8 +5,12 @@ import { buildProject } from "./build.js";
 
 dotenv.config();
 
-const subscriber = createClient();
-const publisher = createClient();
+const subscriber = createClient({
+  url: process.env.REDIS_URL!,
+});
+const publisher = createClient({
+  url: process.env.REDIS_URL!,
+});
 
 async function main() {
   await subscriber.connect();
@@ -23,8 +27,8 @@ async function main() {
     await downloadS3Folder(`output/${response?.element}`);
     console.log("downloaded");
     await buildProject(response?.element || "NULL");
-     copyFinalDist(response?.element || "NULL");
-      publisher.hSet("status", response?.element || "NULL", "deployed");
+    copyFinalDist(response?.element || "NULL");
+    publisher.hSet("status", response?.element || "NULL", "deployed");
   }
 }
 
