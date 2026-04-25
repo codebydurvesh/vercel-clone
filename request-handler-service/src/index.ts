@@ -38,11 +38,12 @@ app.use(express.json());
 
 app.use(async (req, res) => {
   const host = req.hostname;
-  const id = host.split(".")[0];
+  const idFromHeader = req.header("x-deployment-id")?.trim();
+  const id = idFromHeader || host.split(".")[0];
   const filePath = req.path;
 
   console.log("Host:", host);
-  console.log("Subdomain ID:", id);
+  console.log("Subdomain ID:", id, idFromHeader ? "(header)" : "(host)");
   console.log("File Path:", filePath);
 
   const s3FilePath = filePath === "/" ? "index.html" : filePath.slice(1);

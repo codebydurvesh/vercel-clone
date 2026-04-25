@@ -22,7 +22,12 @@ Create `.env` inside `nextjs-frontend`:
 ```env
 NEXT_PUBLIC_BACKEND_UPLOAD_URL=http://localhost:3000
 NEXT_PUBLIC_BACKEND_REQ_URL=http://localhost:3001
+SNAPSHOT_INTERNAL_BASE_URL=http://request-handler-service:3001
 ```
+
+`SNAPSHOT_INTERNAL_BASE_URL` is used by `/api/snapshot` on server side.
+In Docker Compose, keep it as `request-handler-service`.
+Outside Docker, you can omit it to use the incoming target URL directly.
 
 ## Run
 
