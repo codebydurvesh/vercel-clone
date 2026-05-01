@@ -2,12 +2,13 @@
   "name": "cloneofvercel",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.ts",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node dist/index.js",
-    "build": "tsc"
+    "start": "node --loader ts-node/esm src/index.ts",
+    "build": "tsc",
+    "dev": "nodemon --exec \"node --loader ts-node/esm\" src/index.ts"
   },
   "keywords": [],
   "author": "",
@@ -24,6 +25,8 @@
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
+    "nodemon": "^3.1.14",
+    "ts-node": "^10.9.2",
     "typescript": "^6.0.3"
   }
 }
